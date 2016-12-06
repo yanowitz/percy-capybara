@@ -22,10 +22,14 @@ module Percy
           resources = loader.snapshot_resources
           resource_map = {}
           resources.each do |r|
-            resource_map[r.sha] = r
-            Percy.logger.debug { "Snapshot resource: #{r.resource_url}" }
+            if r.resource_url && !r.resource_url.empty?
+              resource_map[r.sha] = r
+              Percy.logger.debug { "Snapshot resource: #{r.resource_url}" }
+            else
+              Percy.logger.debug { "Ignoring resource without a url: #{r.content}" }
+            end
           end
-          Percy.logger.debug { "All snapshot resources loaded (#{Time.now - start}s)" }
+          Percy.logger.debug { "#{resource_map.keys.size} of #{resources.size} snapshot resources loaded (#{Time.now - start}s)" }
 
           # Create the snapshot and upload any missing snapshot resources.
           start = Time.now
